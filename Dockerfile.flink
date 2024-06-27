@@ -1,0 +1,14 @@
+FROM flink:1.19.0-scala_2.12-java11
+
+# Install wget
+USER root
+RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+
+# Switch back to the flink user
+USER flink
+
+# Download the Flink Kafka connector
+RUN wget -P /opt/flink/lib/ https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-kafka_2.11/1.11.6/flink-sql-connector-kafka_2.11-1.11.6.jar
+
+# Set the entrypoint back to the original flink image entrypoint
+ENTRYPOINT ["/docker-entrypoint.sh"]

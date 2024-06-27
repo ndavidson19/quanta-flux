@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: etl-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: etl-app
+  template:
+    metadata:
+      labels:
+        app: etl-app
+    spec:
+      containers:
+      - name: etl-app
+        image: your-registry/etl-app:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:29092"
+        volumeMounts:
+        - name: etl-config
+          mountPath: /app/config
+      volumes:
+      - name: etl-config
+        configMap:
+          name: etl-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etl-config
+data:
+  config.ini: |
+    [kafka]
+    bootstrap_servers = kafka:29092
+    
+    [flink]
+    input_topic = raw_market_data
+    output_topic = processed_market_data
+    
+    [spark]
+    input_topic = raw_market_data
+    output_topic = batch_processed_data
+    
+    [duckdb]
+    database = market_data.db

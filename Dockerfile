@@ -1,19 +1,32 @@
-FROM python:3.9
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
 
+# Set the working directory in the container
 WORKDIR /app
 
-COPY requirements.txt .
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    default-jdk \
+    wget \
+    netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set JAVA_HOME environment variable
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Make port 8000 available to the world outside this container
+EXPOSE 8000
 
+# Define environment variable
+ENV PYTHONUNBUFFERED=1
+
+# Run main.py when the container launches
 CMD ["python", "main.py"]
-
-# requirements.txt
-confluent-kafka==1.9.2
-apache-flink==1.16.0
-pyspark==3.3.2
-duckdb==0.7.1
-pandas==1.5.3
-ib-insync==0.9.70
-yfinance==0.2.18

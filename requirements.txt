@@ -1,0 +1,13 @@
+confluent-kafka
+apache-flink==1.19.0
+pyspark
+duckdb
+pandas
+ib-insync
+yfinance
+pytest
+retry
+ratelimit
+psycopg2-binary
+prometheus-client
+requests
